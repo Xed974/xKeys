@@ -52,13 +52,28 @@ local function MenuKeys()
                         RageUI.Separator(("Model: ~o~%s"):format(v.model))
                         RageUI.Separator(("Plaque: ~o~%s"):format(v.plate))
                         RageUI.Line()
-                        RageUI.Button("Donner les clés", nil, {RightLabel = "→"}, true, {
+                        RageUI.Button("Donner le double des clés", nil, {RightLabel = "→"}, true, {
                             onActive = function()
                                 DrawMarker(0, GetEntityCoords(GetPlayerPed(player)).x, GetEntityCoords(GetPlayerPed(player)).y, GetEntityCoords(GetPlayerPed(player)).z + 1.1, 0.0, 0.0, 0.0, 0.0,0.0,0.0, 0.2, 0.2, 0.2, xKeys.MarkerColorR, xKeys.MarkerColorG, xKeys.MarkerColorB, xKeys.MarkerOpacite, xKeys.MarkerSaute, true, p19, xKeys.MarkerTourne)
                             end,
                             onSelected = function()
                                 if player ~= -1 and distance <= 2.0 then
                                     TriggerServerEvent("xKeys:addKeysForOtherUsers", GetPlayerServerId(player), v.plate)
+                                    RageUI.CloseAll()
+                                    open = false
+                                    select = {}
+                                else
+                                    ESX.ShowNotification("(~r~Erreur~s~)\nAucun joueur à proximité.")
+                                end
+                            end
+                        })
+                        RageUI.Button("Donner les clés", nil, {RightLabel = "→"}, true, {
+                            onActive = function()
+                                DrawMarker(0, GetEntityCoords(GetPlayerPed(player)).x, GetEntityCoords(GetPlayerPed(player)).y, GetEntityCoords(GetPlayerPed(player)).z + 1.1, 0.0, 0.0, 0.0, 0.0,0.0,0.0, 0.2, 0.2, 0.2, xKeys.MarkerColorR, xKeys.MarkerColorG, xKeys.MarkerColorB, xKeys.MarkerOpacite, xKeys.MarkerSaute, true, p19, xKeys.MarkerTourne)
+                            end,
+                            onSelected = function()
+                                if player ~= -1 and distance <= 2.0 then
+                                    TriggerServerEvent("xKeys:changeOwner", GetPlayerServerId(player), v.plate)
                                     RageUI.CloseAll()
                                     open = false
                                     select = {}
