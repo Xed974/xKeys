@@ -2,7 +2,6 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 ESX.RegisterServerCallback("xKeys:getKeys", function(source, cb, plate)
-    local source = source
     local xPlayer = ESX.GetPlayerFromId(source)
 
     if (not xPlayer) then return end
@@ -23,7 +22,6 @@ end)
 
 RegisterNetEvent("xKeys:addKeys")
 AddEventHandler("xKeys:addKeys", function(plate, model)
-    local source = source
     local xPlayer = ESX.GetPlayerFromId(source)
 
     if (not xPlayer) then return end
@@ -33,7 +31,7 @@ AddEventHandler("xKeys:addKeys", function(plate, model)
         ["@model"] = model
     }, function(result)
         if result ~= nil then
-            TriggerClientEvent('esx:showNotification', source, ('(~g~Succès~s~)\nVous avez reçu les clés du véhicule ~r~%s~s~.'):format(plate))
+            TriggerClientEvent('esx:showNotification', xPlayer.source, ('(~g~Succès~s~)\nVous avez reçu les clés du véhicule ~r~%s~s~.'):format(plate))
         end
     end)
 end)
@@ -57,7 +55,6 @@ end)
 
 RegisterNetEvent("xKeys:addKeysForOtherUsers")
 AddEventHandler("xKeys:addKeysForOtherUsers", function(target, plate)
-    local source = source
     local xPlayer = ESX.GetPlayerFromId(source)
     local tPlayer = ESX.GetPlayerFromId(target)
 
@@ -74,7 +71,7 @@ AddEventHandler("xKeys:addKeysForOtherUsers", function(target, plate)
             }, function(result2)
                 if result2 ~= nil then
                     TriggerClientEvent('esx:showNotification', target, ('(~y~Information~s~)\nVous avez reçu le double des clés du véhicule ~r~%s~s~.'):format(plate))
-                    TriggerClientEvent('esx:showNotification', source, ('(~g~Succès~s~)\nVous avez donné le double des clés du véhicule ~r~%s~s~ à ~r~%s~s~.'):format(plate, tPlayer.getName()))
+                    TriggerClientEvent('esx:showNotification', xPlayer.source, ('(~g~Succès~s~)\nVous avez donné le double des clés du véhicule ~r~%s~s~ à ~r~%s~s~.'):format(plate, tPlayer.getName()))
                 end
             end)
         end
@@ -83,7 +80,6 @@ end)
 
 RegisterNetEvent("xKeys:removeKeysForOtherUsers")
 AddEventHandler("xKeys:removeKeysForOtherUsers", function(identifier, plate)
-    local source = source
     local xPlayer = ESX.GetPlayerFromId(source)
 
     if (not xPlayer) then return end
@@ -100,7 +96,7 @@ AddEventHandler("xKeys:removeKeysForOtherUsers", function(identifier, plate)
                         ["@plate"] = plate
                     }, function(result2)
                         if result2 ~= nil then
-                            TriggerClientEvent('esx:showNotification', source, ('(~g~Succès~s~)\nVous avez repris le double des clés du véhicule ~r~%s~s~.'):format(plate))
+                            TriggerClientEvent('esx:showNotification', xPlayer.source, ('(~g~Succès~s~)\nVous avez repris le double des clés du véhicule ~r~%s~s~.'):format(plate))
                         end
                     end)
                 end
@@ -109,8 +105,22 @@ AddEventHandler("xKeys:removeKeysForOtherUsers", function(identifier, plate)
     end)
 end)
 
+RegisterNetEvent("xKeys:changeOwner")
+AddEventHandler("xKeys:changeOwner", function(target, plate)
+    local xPlayer = ESX.GetPlayerFromId(source)
+    local tPlayer = ESX.GetPlayerFromId(target)
+
+    if (not xPlayer) then return end if (not tPlayer) then return end
+    MySQL.Async.execute("UPDATE xkeys SET identifier = @identifier, other_users = @other_users WHERE plate = @plate", {
+        ["@identifier"] = tPlayer.getIdentifier(),
+        ["@other_users"] = json.encode({}),
+        ["@plate"] = plate
+    }, function(result)
+        if result ~= nil then TriggerClientEvent('esx:showNotification', xPlayer.source, ('(~g~Succès~s~)\nVous avez donné les clés du véhicule ~r~%s~s~.'):format(plate)) end
+    end)
+end)
+
 ESX.RegisterServerCallback("xKeys:getCarKeys", function(source, cb)
-    local source = source
     local xPlayer = ESX.GetPlayerFromId(source)
 
     if (not xPlayer) then return end
